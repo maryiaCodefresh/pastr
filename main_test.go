@@ -21,6 +21,8 @@ func TestHomePage(t *testing.T) {
 
     if status := rr.Code; status != http.StatusOK {
         t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+    } else {
+        t.Logf("TestHomePage successful: expected status %v, got %v", http.StatusOK, status)
     }
 }
 
@@ -38,6 +40,8 @@ func TestSetAndGetKey(t *testing.T) {
 
     if retrievedValue != originalValue {
         t.Errorf("setKey and getKey returned different values: set %v, got %v", originalValue, retrievedValue)
+    } else {
+        t.Logf("TestSetAndGetKey successful: expected value %v, got %v", originalValue, retrievedValue)
     }
 }
 
@@ -45,7 +49,9 @@ func TestIsUrl(t *testing.T) {
     testUrl := "http://example.com"
     if !isUrl(testUrl) {
         t.Errorf("isUrl failed to recognize a valid URL: %v", testUrl)
+    } else {
+        t.Logf("TestIsUrl successful: %v is a valid URL", testUrl)
     }
 }
 
-//go test -v 
+// Run the tests with: go test -v 
