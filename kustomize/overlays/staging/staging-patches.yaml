@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pastr-deployment
+spec:
+  template:
+    spec:
+      containers:
+      - name: pastr
+        env:
+        - name: PASTR_KEY_LENGTH
+          value: "5"  # Different key length for staging if needed.

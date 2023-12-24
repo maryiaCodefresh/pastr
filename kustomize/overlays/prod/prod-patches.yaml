@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pastr-deployment
+spec:
+  replicas: 3  # Change this number based on your desired prod replica count.
+  template:
+    spec:
+      containers:
+      - name: pastr
+        env:
+        - name: PASTR_KEY_LENGTH
+          value: "10"  # Maybe you want longer keys in prod.

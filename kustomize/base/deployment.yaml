@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pastr-deployment
+  labels:
+    app: pastr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pastr
+  template:
+    metadata:
+      labels:
+        app: pastr
+    spec:
+      containers:
+      - name: pastr
+        image: "mashabrauer/pastr:main"
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PASTR_HOST
+          value: "http://localhost:3000"
+        - name: PASTR_KEY_LENGTH
+          value: "4"
+        volumeMounts:
+        - name: data
+          mountPath: "/app/data.db"
+      volumes:
+      - name: data
+        hostPath:
+          path: "/home/ec2-user/data.db"
