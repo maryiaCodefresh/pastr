@@ -11,4 +11,4 @@ patches:
 - path: staging-patches.yaml
 images:
 - name: mashabrauer/pastr
-  newTag: 86cc16a
+  newTag: 7b095ce
