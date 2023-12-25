@@ -9,3 +9,6 @@ labels:
     variant: staging
 patches:
 - path: staging-patches.yaml
+images:
+- name: mashabrauer/pastr
+  newTag: 86cc16a
