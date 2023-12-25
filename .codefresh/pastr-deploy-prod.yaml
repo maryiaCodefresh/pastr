@@ -1,0 +1,41 @@
+# More examples of Codefresh YAML can be found at
+# https://codefresh.io/docs/docs/yaml-examples/examples/
+
+version: "1.0"
+# Stages can help you organize your steps in stages
+stages:
+  - "clone"
+  - "deploy"
+
+steps:
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+    revision: "main"
+    git: "github"
+    stage: "clone"
+
+  staging_deploy:
+      title: "Update image tag for prod env"
+      type: "freestyle"
+      working_directory: "${{clone}}/kustomize/overlays/prod/"
+      arguments:
+        image: "automationcloud/kustomize:latest"
+        commands: 
+          - kustomize edit set image mashabrauer/pastr:${{CF_SHORT_REVISION}}
+      stage: "deploy"
+
+  staging_commit:
+      title: "Commit updated manifest"
+      type: "git-commit"
+      stage: "deploy"
+      arguments:
+        repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+        git: "github"
+        commit_message: "Updated App Image to ${{CF_SHORT_REVISION}}"
+        git_user_email: support@codefresh.io
+        git_user_name: Maryia
+        allow_empty: false
+        add:
+          - ./kustomize/overlays/prod/kustomization.yaml

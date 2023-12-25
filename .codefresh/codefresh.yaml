@@ -1,0 +1,66 @@
+# More examples of Codefresh YAML can be found at
+# https://codefresh.io/docs/docs/yaml-examples/examples/
+
+version: "1.0"
+# Stages can help you organize your steps in stages
+stages:
+  - "clone"
+  - "test"
+  - "build"
+  - "deploy"
+
+steps:
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+    revision: "${{CF_BRANCH}}"
+    git: "github"
+    stage: "clone"
+    
+  test:
+      title: "Running test"
+      type: "freestyle" # Run any command
+      image: "golang:alpine" # The image in which command will be executed
+      working_directory: "${{clone}}" # Running command where code cloned
+      commands:
+        - "go test -v"
+      stage: "test"
+
+  build:
+    title: "Building Docker image"
+    type: "build"
+    image_name: "mashabrauer/pastr"
+    working_directory: "${{clone}}"
+    tag: "${{CF_SHORT_REVISION}}"
+    dockerfile: "Dockerfile"
+    stage: "build"
+
+  staging_deploy:
+    title: "Run child pipeline for the image update on the staging env"
+    type: "codefresh-run"
+    arguments:
+      PIPELINE_ID: "training/pastr-deploy-staging"
+      TRIGGER_ID: "from-ci"
+      BRANCH: '${{CF_BRANCH}}'
+      SHA: '${{CF_REVISION}}'
+    stage: "deploy"
+
+  approve_prod_deploy:
+    type: "pending-approval"
+    title: "Deploy to Production?"
+    description: "Approving deploy on the prod env"
+    timeout:
+      duration: 2
+      finalState: denied
+    stage: "deploy"
+      
+  prod_deploy:
+    title: "Run child pipeline for the image update on the prod env"
+    type: "codefresh-run"
+    arguments:
+      PIPELINE_ID: "training/pastr-deploy-prod"
+      TRIGGER_ID: "from-ci"
+      BRANCH: '${{CF_BRANCH}}'
+      SHA: '${{CF_REVISION}}'
+    stage: "deploy"
